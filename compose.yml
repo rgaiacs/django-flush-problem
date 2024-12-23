@@ -1,0 +1,28 @@
+services:
+  mwe:
+    depends_on:
+      db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    expose:
+      - "8000"
+    volumes:
+      - type: bind
+        source: src
+        target: /var/app
+
+  db:
+    image: postgres:16.4-alpine3.20
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: mwe
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
